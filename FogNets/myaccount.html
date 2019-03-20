@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<head>
+<title>Shopping Cart</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"href="lib\bootstrap.css">
+<script src="lib\jquery.js"></script>
+<script src="lib\bootstrap.js"></script>
+<style>
+ thead th {background: #6CF}
+ table{font-size:12px;}
+</style>
+<script>
+
+$(document).ready(function(){ 
+  
+//if  (! sessionStorage.userid) $(location).attr('href','loginPage.html'); 
+if(!sessionStorage.userid) userid='1001'; else userid= sessionStorage.userid;
+
+str="userid="+userid;
+//alert(str);
+  $.ajax({url: "MyAccount.php", data: str, type: "POST",	dataType: 'json',
+     success: function(arr) { fDisplay(arr); },
+	 error: function(E){alert(E.status + ':' + E.statusText); }
+  });
+
+	
+ function fDisplay(arr) {	   
+   var txt = ""; oid=-1;tot=0;firstRec=1; 
+     $.each(arr, function(k, row){ 
+     if(oid!==row.oid && firstRec==0)
+	  {
+	 txt=txt+"<tr><td colspan='3'> total</td><td>"+tot+"</td></tr>";}
+   	  firstRec=0;
+	 if(oid!==row.oid)
+	  {txt=txt+"<table class='table table-bordered'> <thead class='thead-dark'><th>orderid</th><th colspan='3'>";  
+	   txt=txt+ row.oid + "</th></thead>";
+	   txt=txt+"<thead> <th >order date </th><th colspan='3'>"+row.odate +"</th></thead>";
+       oid=row.oid;
+	   txt+="<thead> <th style='width:180px'>product</th><th>Qty</th><th>price</th><th>subtotal</th></thead>";
+       oid=row.oid;tot=0;}
+
+	 tot=tot+parseFloat(row.subtot);
+	 txt+= "<tr><td>"+row.pname +"</td><td>"+row.qty +"</td><td>"+row.price+"</td><td>"
+	 txt+=row.subtot+"</td></tr>"; 
+	})
+    txt=txt+"<tr><td colspan='3'> total</td><td>"+tot+"</td></tr> </table>";
+	$("#orderTable").html(txt);
+ }
+
+});
+</script>
+</head>
+
+<body>
+   <div id="orderTable"> </div>
+</body>
+</html>

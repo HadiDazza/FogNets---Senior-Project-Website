@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<head>
+<title>Shopping Cart</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"href="lib\bootstrap.css">
+<script src="lib\jquery.js"></script>
+<script src="lib\bootstrap.js"></script>
+<style>
+ thead th {background: #6CF}
+ table{font-size:12px;}
+</style>
+<script>
+
+$(document).ready(function(){ 
+
+//localStorage only supports strings. Use JSON.stringify() and JSON.parse().
+function saveCart() {cart=JSON.stringify(cart); localStorage.setItem("cart", cart);} 
+function readCart() {return JSON.parse(localStorage.getItem("cart"));} 
+
+fShowCart();
+function fShowCart()
+{  $("#cartTable").html(""); 
+   cartTemp = readCart();
+   subtot=0; tot=0;
+   if(cartTemp.length==0) t="Your Cart is empty"; 
+   else
+    { t="<h4>Your Shopping Cart <span class='glyphicon glyphicon-shopping-cart'></span> " +
+	    "<button type='button' class='btn btn-info pull-right bCheckout'> Chekout</button> </h4>"+
+	    "<table class='table table-bordered'> <thead class='thead-dark'><tr><th> Product </th>"+
+		"<th> Qty</th><th>Price</th><th> Subtotal</th></tr> </thead>"; 
+      $.each(cartTemp, function(k, row){ 
+         subtot=row.qty*row.price;
+	     tot=tot+subtot;
+         t+="<tr><td> <button type='button' class='btn btn-info btn-sm bDeleteItem' data-pid=" +row.pid + 
+		    "> <span class='glyphicon glyphicon-trash '></span>  </button>" + "  " +row.pname +
+			"</td><td class='text-right'>"+row.qty + "</td><td class='text-right'>"+row.price+
+			"</td><td class='text-right'>" +subtot + "</td></tr>"; 
+	  })
+   	  t+="<tr><td colspan='3'> total</td><td class='text-right'>"+tot+"</td></tr></table>";
+	}
+	$("#cartTable").html(t);
+};
+
+$(document).on('click', '.bDeleteItem', function(){ 
+    cartTemp = readCart(); pid=$(this).attr("data-pid"); cart=[];
+    $.each(cartTemp, function(k, row){  if (row.pid !=pid)  cart.push(row);})
+    saveCart(); fShowCart();
+});
+
+});
+</script>
+</head>
+
+<body>
+   <p id="cartTable"> </p>
+</body>
+</html>
+

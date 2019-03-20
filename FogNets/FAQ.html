@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<head>
+<title>FAQ</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"href="lib\bootstrap.css">
+<script src="lib\jquery.js"></script>
+<script src="lib\bootstrap.js"></script>
+<style>
+
+</style>
+<script>
+
+$(document).ready(function(){ 
+ fReadFAQ();
+ function fReadFAQ() 
+  { $.ajax({url:'FAQ.php', data:"", type: 'post', dataType: 'json',
+      success: function(Arr) {fDisplay(Arr); },
+      error: function(E) {$('#p3').html(E.status + E.statusText);}
+    });
+  }
+  
+function fDisplay(Arr) {		   
+  t="<table  class='table table-striped'> <thead class='thead-dark'><tr><th> Question </th><th> Answer</th></tr> </thead>"; 
+  $.each(Arr, function(i, row) { t=t+"<tr><th>" + row.Q + "</th><td>" + row.A + "</td></tr>";  })
+  t=t+"</table>"; 
+ $("#p3").html(t);
+};    
+
+});
+function goBack() { window.history.back(); }
+</script>   
+</head>
+
+<body>
+<div class="container">
+ <div class="row">
+ <div class="col-xs-12">
+ <h1 class="text-primary text-center bg-info">F.A.Q.</h1>
+ </div>
+ </div> 
+ <div class="row">
+  <div class="col-xs-12">
+     <p id="p3"> </p>
+  </div>
+ </div>
+ <button type="button" class="btn btn-primary btn-block" onclick="goBack()">Go Back</button>
+
+</div>
+</body>
+</html>

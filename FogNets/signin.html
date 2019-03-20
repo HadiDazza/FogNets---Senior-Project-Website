@@ -1,0 +1,62 @@
+<!DOCTYPE html><head>
+  <title>Login </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/bootstrap.css">
+  <script src="lib/jquery.js"></script>
+  <script src="lib/bootstrap.js"></script>
+<style> 
+body { background: url("img/background.jpg") no-repeat center center fixed; webkit-background-size: cover; moz-background-size: cover; o-background-size: cover; background-size: cover;}
+#f1 {font-size:30px;color:Green;background:url("img/abstract3.jpg");}
+h2{text-align:center;background:url("img/abstract3.jpg");}
+ </style>
+<script>
+  $(document).ready(function(){ 
+    $("#bSubmit").on("click", function(event)  {
+       str= $('#f1').serialize(); 
+       if($('#f1')[0].checkValidity())    {
+          event.preventDefault(); 
+          $.ajax({url:'signin.php', data: str, type: 'post', dataType: 'json',
+	       success: function(Arr) {f1(Arr)},
+	       error: function(E) {$('#message').html(E.status + E.statusText)}
+          });
+ 		 }
+      });
+	function f1(Arr)
+	  {
+	    if(Arr[0].found=="yes") {$('#message').html("Welcome " + Arr[0].uname);}
+		else{$("#message").html("Username/Password is incorrect. Try again!");} 
+	  }
+ });
+ function goBack() { window.history.back(); }
+</script>
+</head>
+
+<body>
+ 
+<div class="container-fluid">
+ <div class="row">
+ <div class="col-xs-12"  > 
+  <div class="bs-example" style="max-width:400px; margin-left:auto;margin-right:auto;">
+   <button type="button" class="btn btn-success center-block" onclick="goBack()">Previous Page</button>
+   <h2 style="font-size:60px;color:Green; font:'Times New Roman', Times, serif"> Log-In </h2>
+   <form  id='f1'  > 
+    <fieldset class=>
+      <label for="uid">Username</label>
+      <input type="text" class="form-control" id="uid" name="uid" placeholder="Enter User ID" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="pass">Password</label>
+      <input type="password" class="form-control" id="pass" name="pass" placeholder="Password" required>
+    </fieldset>
+    <h5 id='message' class='text-danger text-center' style='height:12px'> </h5>
+    <button type="submit" class="btn btn-block btn-success" id='bSubmit'>LogIn</button>
+   </form>
+ <!--End form -->
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+

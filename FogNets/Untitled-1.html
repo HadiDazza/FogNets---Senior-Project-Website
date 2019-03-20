@@ -1,0 +1,252 @@
+<!DOCTYPE html><head>
+  <title> Amazon website </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/bootstrap.css">
+  <script src="lib/jquery.js"></script>
+  <script src="lib/bootstrap.js"></script>
+<style> 
+
+html   { position: relative;  min-height: 100%; }
+body   { margin: 0 0 60px; 0}  /* bottom margin = 100px for footer height */ 
+footer { position: absolute;left: 0; bottom: 0;  height: 50px; width: 100%;}
+
+.pname{font-size:10px;}
+.pprice{color:blue; font-weight:bold; float:right;}
+.pp{max-width:190px;}
+
+.carousel .item img {max-height: 300px; min-width: auto; }
+
+ #shoppingCart{overflow-y:scroll; min-width:300px; max-width:100%; max-height:250px } 
+</style>
+<script>
+ 
+$(document).ready(function(){ 
+
+cat="all"; fReadProducts();  
+
+$(document).on('click', '.bPid', function(){ 
+  pid =$(this).data('pid'); 
+  fReadProducts();
+});
+
+function fReadProducts()
+{  str= "pid="+pid;  
+   $.ajax({url:"ReadProducts.php", data:str, type:"POST", dataType:'json',
+     success: function(arr) { fDisplayProducts(arr); },
+	 error: function(E){alert(E.status + ':' + E.statusText); }
+   });
+}
+	
+function fDisplayProducts(arr) {		   
+   var txt = "";
+   $.each(arr, function(k, row){ 
+    productData=JSON.stringify(row);
+	im="img/" + row.pimg;
+    txt=txt+
+	"<div class='col-sm-3 bg-info center-block' style='border: 2px solid white;max-width:300px;'>" +
+	   "<p class='center-block' style='max-width:190px;'>" +
+	     "<p class='pp'> <span class='pname'>" + row.pname + "</span> <span class='pprice'> $" + row.price + "</span> </p>" +
+         "<p> <img class='img-responsive center-block' style='height:100px;' src= '" + im + "'> </p>"+
+	     
+		 "<div class='input-group'>"+
+             "<input type='number' style='max-width:60px;' class='form-control qtyinput' value='1' min='1' max='10' >"+
+             "<span class='input-group-btn'>" +
+                "<button class='btn btn-success bAddItem' data-info='" + productData + "' type='button'>Buy!</button>" +
+             "</span>" +
+         "</div>"+
+	
+  	"</div>" 
+})
+
+   $("#items").html(txt); 
+/**
+**/
+
+ };   
+
+/* start cart **************** */
+
+cart = []; saveCart();
+function saveCart() {cart=JSON.stringify(cart); localStorage.setItem("cart", cart); }
+function readCart() {return JSON.parse(localStorage.getItem("cart")); } 
+
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+setInterval(myFunction, 1000); // call every 1000 milliseconds
+function myFunction() 
+ {cartTemp = readCart();
+  if(cartTemp.length==0) 
+    { $('#bValidate').prop('disabled', true) ; $('#bPay').prop('disabled', true);}
+  else if(!$('#bPay').prop("disabled"))
+         $('#bValidate').prop('disabled', true)
+	  else 	  $('#bValidate').prop('disabled', false);
+	   
+  if ($('#oldOrders').is(':hidden')) $('#orders').html("show orders"); 
+  else $('#orders').html("hide orders");	  
+}
+	
+$('#bValidate').on('click', function(){
+    $('#bPay').prop('disabled', false);
+    $('#shoppingCart').find('*').prop('disabled',true); //disable all clickable elements in div 
+});
+
+$('#bPay').on('click', function(){
+$(location).attr('href','Shipping.html');
+    arr={};
+	arr['uid']=sessionStorage.userid;
+	arr['orders']=JSON.parse(localStorage.getItem("cart"));
+	arr=JSON.stringify(arr);
+	// write into DB //alert(arr); alert('now will write into DB');
+    $.ajax({url:'Payment.php', data: arr, type: 'post', dataType: 'json', cache: false, 
+	    success: function(Arr) {alert(Arr.a)},
+	    error: function(E) {alert(E.status + E.statusText)}
+      });
+    
+    cart = []; saveCart();
+    $("#shoppingCart").load("shoppingCart.html");
+});
+
+$(document).on('click', '.bAddItem', function(){ 
+  newItem =$(this).data('info'); 
+  qty=$(this).closest('div.input-group').find('.qtyinput').val(); //alert(qty);
+  
+  pid= newItem.pid;
+  cartTemp = readCart(); 
+  cart=[]; found=false;
+  $.each(cartTemp, function(k,row) {if (row.pid==pid) {found=true; row.qty=qty;} cart.push(row);})
+  if (! found) {newItem["qty"] =qty; cart.push(newItem); }// Push item to the cart
+  saveCart(); // Save cart back to local storage
+
+  $("#shoppingCart").load("shoppingCart.html");
+});
+
+// load my account from MyAccount.html into my account div Modal  
+$('#myModal').on('show.bs.modal', function (e) {
+    $("#myaccountDiv").load("MyAccount.html");
+});
+
+});
+</script>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<!-- Start burger menu  --> 
+<div class="page-header"> 
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid" >
+    <div class="navbar-header" >
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span> 
+      </button>
+      
+    <a class="navbar-brand" href="#">WebSiteName</a>     </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="#"	>Home</a></li>
+        <li><a href="ContactUs.html">Contact us</a></li> 
+        <li><a href="#">About us</a></li> 
+        <li><a href="FAQ.html">FAQ </a></li>
+        <li><a href="#">Shopping</a></li> 
+        <li><a href="#" data-toggle="modal" data-target="#myModal">My Account</a></li> 
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="signup.html"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="signin.html"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+</div>
+<!--End burger Menu --> 
+
+<div class="row">
+  <div class="col-xs-12" > 
+  <!--start carousel --> 
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <!-- Indicators -->
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+        <li data-target="#myCarousel" data-slide-to="3"></li>
+      </ol>
+    
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner" role="listbox">
+        <div class="item active"> 	<img src="img/carousel2.jpg" width="100%"> </div>
+        <div class="item"> 			<img src="img/carousel3.jpg" width="100%"> </div>
+        <div class="item"> 			<img src="img/carousel4.jpg" width="100%"> </div>
+        <div class="item"> 			<img src="img/carousel5.jpg" width="100%"> </div>
+      </div>
+    
+      <!-- Left and right controls -->
+      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+         
+  <!--End carousel -->
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3"> <!-- start categories  -->
+      <h1>categories</h1>
+      <div class="list-group">
+          <a class='btn btn-default btn-block bCat' data-cat='all'>All Categories</a>
+          <a class='btn btn-default btn-block bCat' data-cat='Mobile'>Mobile</a>
+          <a class='btn btn-default btn-block bCat' data-cat='TV'>TV</a>
+          <a class='btn btn-default btn-block bCat' data-cat='PC'>PC</a>
+      </div>  <!-- end categories  -->
+      <div id="shoppingCart"></div>  <!-- shopping cart recalled from shoppingcart.html  -->
+  </div>
+
+  <div class="col-sm-9">  <!-- Products  -->
+      <h1>Products</h1>
+      <p id="items"> </p>      <!-- prodcuts are created dybanically and recalled from the server  -->
+  </div> <!-- Products  -->
+ 
+</div> 
+
+
+<!-- Modal - My Account -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">My Account</h4>
+        </div>
+        <div class="modal-body">
+            <p id="myaccountDiv">  load my account in this section</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- Modal - My Account -->
+
+<footer class="bg-primary text-center"> <h3>Copyright © Prototype class</h3> </footer> 
+
+</div>
+
+</body>
+</html>
+

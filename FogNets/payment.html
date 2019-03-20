@@ -1,0 +1,107 @@
+<!-- Designed $ Developed By Hasan Sahily  !-->
+<!DOCTYPE html>
+
+<head>
+<title>Shopping Cart</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"href="lib\bootstrap.css">
+<script src="lib\jquery.js"></script>
+<script src="lib\bootstrap.js"></script>
+<style>
+ table{font-size:12px;}
+ thead th {background: #6CF}
+ th{text-align:left}
+ td{text-align:right}
+ progress {width: 100%; height:20px;}
+ #processing {margin-top: 2em; display: none;}
+ #orderTable{overflow-y:scroll; max-height:240px; } 
+ #orderSummary p{background-color: #039; color:white; text-align:left; 
+          padding:5px;width:100%;font-size:20px;}
+ #pay{display:block; float:left; margin:20px;}
+</style>
+<script>
+ $(document).ready(function(){ 
+ $("#bPayNow").on("click",function(event)  {
+      str= $('#f1').serialize(); 
+      if($('#f1')[0].checkValidity())    {alert("jj");
+	  $("#processing").css({"display":"block"})  
+	  event.preventDefault(); ar={}; 
+	  $.ajax({url:'Payment.php', data: str, type: 'post', dataType: 'json', cache: false, 
+	    success: function(Arr) {alert(Arr.a)},
+	    error: function(E) {$('#msg').html(E.status + E.statusText)}
+      });
+    }
+ });
+
+fShowCart();
+function fShowCart()
+{ $("#cartTable").html(""); 
+  cart = JSON.parse(localStorage.getItem("cart"));
+  subtot=0; tot=0;
+  t="<table class='table table-bordered'> <thead class='thead-dark'> <th style='width:180px'>product</th>";
+  t=t+"<th>Qty</th><th>price</th><th>subtotal</th></thead>";
+  $.each(cart, function(k, row){ 
+      subtot=row.qty*row.price;
+	  tot=tot+subtot;
+	  t+="<tr><th>" + row.pname +"</th><td>"+row.qty
+	  t+="</td><td>"+row.price+"</td><td>" +subtot + "</td></tr>"; 
+	})
+   	t+="<tr><th colspan='3'> Grand total</td><td>$"+tot+"</td></tr></table>";
+	$("#cartTable").html(t);
+};
+
+});
+ function goBack() { window.history.back(); }
+</script>
+</head>
+
+<body  class="bg-info">
+ <div class="container-fluid">
+  <h3> Test Bank </h3>
+  <div class="row">
+   <div class="col-sm-6"  > 
+     <div id='orderSummary'> <p> Order Summary</p> <div id="cartTable"> </div> </div>
+   </div>
+   <!--Start form --> 
+   <div class="col-sm-6"  > 
+     <div class="bs-example" style="max-width:400px;">
+      <button type="button" class="btn btn-primary btn-block" onclick="goBack()">Go Back</button>
+      <h2 class="text-primary"> Online Payment </h2>
+      <form id="f1" >
+       <legend><img src="img/payonline.png" width="160" height="60"></legend>
+       <fieldset class="form-group">
+         <label for="cname">Name on card</label>
+          <input type="text" class="form-control" name="cname" id="cname" maxlength="20" value="" >
+         </fieldset>
+         <fieldset class="form-group">
+          <label for="ccNo">Credit Card Number</label>
+          <input type="text" class="form-control" name="ccNo" id="ccNo" value="" pattern="[0-9]{13,16}" autofocus required>
+         </fieldset>
+         <fieldset class="form-group">
+          <label for="expDate"> Card Expiry</label>
+          <input name="expDate" class="form-control" id="expDate" type="month" required/>
+         </fieldset>
+        <fieldset class="form-group">
+          <label for="cvv" >Security Code CCV</label>
+          <input type="text" class="form-control" name="cvv" id="cvv" value="" maxlength="4" placeholder="CVV" >
+        </fieldset>
+       <div id="processing">
+         <progress></progress> 
+         <p style="text-align:center">Processing...</p>
+       </div>
+
+       <button type="button" id="bPayNow" class="btn btn-primary active">Pay Now</button>
+       <button type="button" id="bCancel"class="btn btn-primary ">Cancel</button>
+       <h5 id='msg' class='text-danger text-center' style='height:12px'> </h5>
+
+     </form>
+ <!--End form -->
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+

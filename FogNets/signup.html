@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+  <title>Create Profile</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/bootstrap.css">
+  <script src="lib/jquery.js"></script>
+  <script src="lib/bootstrap.js"></script>
+<style>
+body { background: url("img/background3.jpg") no-repeat center center fixed; webkit-background-size: cover; moz-background-size: cover; o-background-size: cover; background-size: cover;}
+
+#f1 {font-size:15px;color:Black;}
+
+h2{text-align:center; font-size:60px;color:Black;}
+#message {color:Black;font-size:16px;font:bold;} 
+
+</style>
+<script  src="Lib/jquery.js">   </script>
+<script>
+  $(document).ready(function(){ 
+    $("#bSubmit").on("click", function(event)  {
+       str= $('#f1').serialize(); 
+       if($('#f1')[0].checkValidity())    {
+          event.preventDefault(); 
+          $.ajax({url:'signup.php', data: str, type: 'post', dataType: 'json',
+	       success: function(Arr) {f1(Arr)},
+	       error: function(E) {$('#message').html(E.status + E.statusText)}
+          });
+ 		 }
+      });
+
+	function f1(Arr)
+	  {
+	    if(Arr[0].created=="yes") {$('#message').html("User has been created! Welcome");}
+		else{$("#message").html("User-ID already taken! Try a different one please!");} 
+	  }
+ });
+</script>
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+<!--Start form --> 
+<div class="row">
+ <div class="col-xs-12"> 
+<div class="container"> 
+<h2> Sign-Up </h2>
+ <form  id='f1' style="max-width:400px; margin-left:auto;margin-right:auto;">
+    <fieldset class="form-group">
+      
+
+    <fieldset class="form-group">
+      <label for="uname">Full Name</label>
+      <input type="text" class="form-control" id="uname" name="uname" placeholder="Enter Full name" required>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <label for="address">Address</label>
+      <input type="text" class="form-control" id="address" name="address" placeholder="Enter Address" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="address">Phone Number</label>
+      <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter Phone Number" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="address">Email Address</label>
+      <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email Address" required>
+    </fieldset>
+    
+    <label for="uid">User-ID</label>
+      <input type="text" class="form-control" id="uid" name="uid" placeholder="Enter UserID" required>
+    </fieldset>
+    
+    <fieldset class="form-group">
+      <label for="pass">Password</label>
+      <input type="password" class="form-control" id="pass" name="pass" placeholder="Password" required>
+    </fieldset>
+
+
+    <h5 id='message' class='text-danger text-center' style='height:12px'> </h5>
+    <button type="submit" class="btn btn-block btn-success" id='bSubmit'>Submit</button>
+</form>
+<!--End form -->
+</div>
+</div>
+</div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+

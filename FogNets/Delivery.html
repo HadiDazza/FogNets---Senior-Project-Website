@@ -1,0 +1,72 @@
+<!-- Designed $ Developed By Hasan Sahily  !-->
+<!DOCTYPE html>
+<head>
+  <title>Delivery Details </title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="lib/bootstrap.css">
+  <script src="lib/jquery.js"></script>
+  <script src="lib/bootstrap.js"></script>
+<style> 
+    .bs-example{margin: 20px ;  }
+ </style>
+<script>
+$(document).ready(function(){ 
+  $("#bSubmit").on("click",function(event)  {
+      str= $('#f1').serializeArray();
+	  obj = {}
+      $.each(str, function(k, row) { obj[row.name] = row.value })
+	  str=JSON.stringify(obj);    
+      if($('#f1')[0].checkValidity())    {
+	  event.preventDefault();
+	  
+	  localStorage.setItem("shipping", str); 
+      str=localStorage.getItem("shipping"); //alert(str);  
+
+     }
+  });
+});
+
+ function goBack() { window.history.back(); }
+</script>
+</head>
+
+<body  class="bg-info">
+ <div class="container-fluid">
+<!--Start form --> 
+ <div class="row">
+ <div class="col-xs-12"  > 
+  <div class="bs-example" style="max-width:400px;">
+   <button type="button" class="btn btn-primary btn-block" onclick="goBack()">Go Back</button>
+   <h2 class="text-primary"> Delivery Details </h2>
+   <form  id='f1'  >
+    <fieldset class="form-group">
+      <label for="city">City</label>
+      <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="street">Street</label>
+      <input type="text" class="form-control" id="street" name="street" placeholder="Street" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="Building">Building</label>
+      <input type="text" class="form-control" id="building" name="building" placeholder="Building" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="details">Details</label>
+      <input type="text" class="form-control" id="details" name="details" placeholder="details" required>
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="tel">Telephone</label>
+      <input type="text" class="form-control" id="tel" name="tel" placeholder="tel" required>
+    </fieldset>
+    
+    <button type="submit" class="btn btn-block btn-success" id='bSubmit'>Proceed to Payment</button>
+   </form>
+ <!--End form -->
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
